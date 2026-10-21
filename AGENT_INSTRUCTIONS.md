@@ -75,8 +75,9 @@ Every other Sunday. Each run is independent: read this file and `data.json` fres
 | Net Debt/EBITDA | Net Debt ÷ EBITDA (`"N/A"` if EBITDA ≤ 0) |
 | Live vs pipeline % | Installed MW ÷ Pipeline MW |
 | G&A % of Revenue | G&A ÷ Revenue |
-| EBITDA/MW, PAT/MW, Net debt/MW | metric ÷ installed MW |
+| Revenue/MW, EBITDA/MW, PAT/MW, Net debt/MW | metric ÷ installed MW |
 | MW/FTE | installed MW ÷ total employees |
+| FTE/MW | total employees ÷ installed MW |
 | Revenue ($M)/FTE, EBITDA ($M)/FTE | metric ÷ total employees |
 
 The MW basis has one exception. Fermi has no installed capacity, so its per-MW and

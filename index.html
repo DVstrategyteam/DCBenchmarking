@@ -190,8 +190,8 @@ h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,4vw,38px);font-we
       <div class="chartbox"><canvas id="hEmp"></canvas></div>
     </div>
     <div class="panel">
-      <h2>MW per FTE</h2>
-      <div class="desc">Installed/pipeline MW managed per employee.</div>
+      <h2>FTE per MW</h2>
+      <div class="desc">Employees per installed MW (Fermi: per contracted MW).</div>
       <div class="chartbox"><canvas id="hMw"></canvas></div>
     </div>
   </div>
@@ -399,8 +399,8 @@ function drawRevMargin(id){
       x:noGridX}}});
 }
 // unit-economics chart with its own local metric pills
-const MW_METRICS = ["EBITDA/MW","PAT/MW","FCF/MW","Capex/MW","Net debt/MW"];
-let mwMetric = "EBITDA/MW";
+const MW_METRICS = ["Revenue/MW","EBITDA/MW","PAT/MW","FCF/MW","Capex/MW","Net debt/MW"];
+let mwMetric = "Revenue/MW";
 function drawMw(){
   singleBar("fMw", financial[mwMetric], "", {yTitle:"$M per MW", negColor:NEG, breakOutliers:true,
     fmt:v=>(v<0?"-":"")+"$"+(Math.round(Math.abs(v)*100)/100)+"M"});
@@ -437,7 +437,7 @@ const fteKeys = ["Sales & BD %","IT %","Operations %","Others %","Engineering %"
 const fteColors = [VIOLET,TURQ,SILVER,"#58C9D5",LIGHTV];
 function drawFTE(){
   singleBar("hEmp", fte["Total employees"], "", {yTitle:"Employees", breakOutliers:true, color:VIOLET, fmt:v=>Math.round(v).toLocaleString()});
-  singleBar("hMw", fte["MW/FTE"], "", {yTitle:"MW per FTE"});
+  singleBar("hMw", fte["FTE/MW"], "", {yTitle:"FTE per MW", breakOutliers:true});
   multiBar("hProd", [
     {label:"Revenue $M / FTE", arr: fte["Revenue ($M)/FTE"], color:TURQ},
     {label:"EBITDA $M / FTE", arr: fte["EBITDA ($M)/FTE"], color:VIOLET}

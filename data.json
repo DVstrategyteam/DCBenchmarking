@@ -330,6 +330,18 @@
         "Nebius": "71.0%",
         "Meta": "6.1%"
       },
+      "Revenue/MW": {
+        "Equinix": 4.89,
+        "Digital Realty": 1.91,
+        "CoreWeave": 3.42,
+        "Fermi": 0.0,
+        "NextDC": 1.37,
+        "Applied Digital": 1.58,
+        "IREN": 0.87,
+        "Hut 8": 0.23,
+        "Nebius": 3.12,
+        "Meta": 66.99
+      },
       "PAT/MW": {
         "Equinix": 0.43,
         "Digital Realty": 0.22,
@@ -403,6 +415,18 @@
         "Hut 8": 4.11,
         "Nebius": 0.12,
         "Meta": 0.04
+      },
+      "FTE/MW": {
+        "Equinix": 7.33,
+        "Digital Realty": 1.38,
+        "CoreWeave": 1.46,
+        "Fermi": 0.32,
+        "NextDC": 2.15,
+        "Applied Digital": 0.66,
+        "IREN": 0.85,
+        "Hut 8": 0.24,
+        "Nebius": 8.06,
+        "Meta": 26.29
       },
       "Revenue ($M)/FTE": {
         "Equinix": 0.67,
