@@ -72,10 +72,12 @@ Every other Sunday. Each run is independent: read this file and `data.json` fres
 |---|---|
 | EBITDA Margin | EBITDA ÷ Revenue |
 | PAT Margin | PAT ÷ Revenue |
-| Net Debt/EBITDA | Net Debt ÷ EBITDA (`"N/A"` if EBITDA ≤ 0) |
+| Net Debt/EBITDA | Net Debt ÷ the EBITDA shown on the dashboard (a negative multiple when EBITDA is negative) |
 | Live vs pipeline % | Installed MW ÷ Pipeline MW |
 | G&A % of Revenue | G&A ÷ Revenue |
 | Revenue/MW, EBITDA/MW, PAT/MW, Net debt/MW | metric ÷ installed MW |
+| Capex/MW | Last FY capex ÷ installed MW |
+| FCF/MW | free cash flow of the latest full financial year ÷ installed MW |
 | MW/FTE | installed MW ÷ total employees |
 | FTE/MW | total employees ÷ installed MW |
 | Revenue ($M)/FTE, EBITDA ($M)/FTE | metric ÷ total employees |
@@ -83,8 +85,17 @@ Every other Sunday. Each run is independent: read this file and `data.json` fres
 The MW basis has one exception. Fermi has no installed capacity, so its per-MW and
 per-FTE figures use its 222 MW contracted capacity.
 
-FCF/MW and Capex/MW follow the owner's original workbook definitions. If the inputs are
-unclear, leave them unchanged and mention that in the pull request.
+Use the same installed MW for every per-MW and per-FTE figure of a company, and the same
+figures shown on the dashboard (revenue, EBITDA, PAT, net debt, headcount) as inputs.
+
+## Capex and headcount mix (reported, not derived)
+
+- `Last FY capex ($M)` with `Last FY capex period` (e.g. `"FY2025"`): capex of the latest
+  full financial year.
+- `Next FY capex ($M)` with `Next FY capex period`: the company's guided capex for the next
+  year. Use `"—"` when the company has not guided a number.
+- Headcount mix: `Sales & BD %`, `IT %`, `Operations %`, `Others %`, `Engineering %`,
+  `Corporate Functions %` and `HR %`, as whole percentages that add up to about 100.
 
 ## Never
 
