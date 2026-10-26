@@ -76,7 +76,7 @@ Every other Sunday. Each run is independent: read this file and `data.json` fres
 | Live vs pipeline % | Installed MW ÷ Pipeline MW |
 | G&A % of Revenue | G&A ÷ Revenue |
 | Revenue/MW, EBITDA/MW, PAT/MW, Net debt/MW | metric ÷ installed MW |
-| Capex/MW | Last FY capex ÷ installed MW |
+| Capex/MW | capex for the same period as the company's other figures ÷ installed MW (normally last FY capex; Fermi uses H1 2026 capex) |
 | FCF/MW | free cash flow of the latest full financial year ÷ installed MW |
 | MW/FTE | installed MW ÷ total employees |
 | FTE/MW | total employees ÷ installed MW |
@@ -87,6 +87,11 @@ per-FTE figures use its 222 MW contracted capacity.
 
 Use the same installed MW for every per-MW and per-FTE figure of a company, and the same
 figures shown on the dashboard (revenue, EBITDA, PAT, net debt, headcount) as inputs.
+
+If a figure can only be given for a different period from the company's other figures,
+record that period in `notes[metric][company]` (e.g. `notes["FCF/MW"]["IREN"] = "FY25"`).
+The dashboard shows it next to the bar. Remove the note once the figure is brought up to
+date.
 
 ## Capex and headcount mix (reported, not derived)
 
