@@ -117,8 +117,8 @@ h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,4vw,38px);font-we
     </div>
   </div>
   <div class="panel">
-    <h2>Capex — last 3Y vs. next 3Y</h2>
-    <div class="desc">In $M / $B. Next-3Y shown only where a numeric guide is disclosed. Bars marked // are outliers shortened to fit — the label shows the true value.</div>
+    <h2>Capex — last financial year vs. next financial year</h2>
+    <div class="desc">In $M / $B. Each bar is labelled with the year it covers. Next year is shown only where the company has guided a number. Bars marked // are outliers shortened to fit — the label shows the true value.</div>
     <div class="chartbox tall"><canvas id="cCapex"></canvas></div>
   </div>
 </div>
@@ -202,7 +202,7 @@ h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,4vw,38px);font-we
   </div>
   <div class="panel">
     <h2>Headcount function mix</h2>
-    <div class="desc">Share of employees by function, 100% stacked.</div>
+    <div class="desc">Share of employees by function. Some rows add up to 101% because each share is rounded.</div>
     <div class="chartbox" style="height:520px"><canvas id="hMix"></canvas></div>
   </div>
 </div>
@@ -351,9 +351,13 @@ function multiBar(id, series, opts={}){
     label:s.label, backgroundColor:s.color, realData: raw[si],
     data: raw[si].map(v=> (cap && v!==null && v>cap) ? cap : v)
   }))}, options:{plugins:{legend:legendW, axisBreak:{cap},
-    tooltip:{callbacks:{label:c=> { const r=c.dataset.realData[c.dataIndex]; return c.dataset.label+": "+(r===null?"N/A":(opts.money?fmtMoney(r):fmtShort(r)+(opts.unit||""))); }}},
-    datalabels:{display:opts.labels!==false, anchor:"end", align:c=>((c.dataset.data[c.dataIndex]||0)<0?"bottom":"top"), color:"#FFFFFF", font:{size:12}, formatter:(v,c)=>{ const r=c.dataset.realData[c.dataIndex]; return r===null?"":(opts.money?fmtMoney(r):fmtShort(r)+(opts.unit||"")); }}},
-    layout:{padding:{top:28}},
+    tooltip:{callbacks:{label:c=> { const r=c.dataset.realData[c.dataIndex], p=series[c.datasetIndex].periods;
+      return c.dataset.label+(p?" ("+p[idx[c.dataIndex]]+")":"")+": "+(r===null?"N/A":(opts.money?fmtMoney(r):fmtShort(r)+(opts.unit||""))); }}},
+    datalabels:{display:opts.labels!==false, anchor:"end", align:c=>((c.dataset.data[c.dataIndex]||0)<0?"bottom":"top"), color:"#FFFFFF", font:{size:12}, textAlign:"center",
+      formatter:(v,c)=>{ const r=c.dataset.realData[c.dataIndex], p=series[c.datasetIndex].periods;
+        if(r===null) return ""; const t=opts.money?fmtMoney(r):fmtShort(r)+(opts.unit||"");
+        return p ? [t, String(p[idx[c.dataIndex]]).replace(/^FY20(\d\d)$/, "FY$1")] : t; }}},
+    layout:{padding:{top:opts.periodLabels?46:28}},
     scales:{y:Object.assign({title:{display:true,text:opts.yTitle||"",color:"#999AB8"}, ticks: opts.money?{callback:v=>v===0?"$0":fmtMoney(v)}:{}}, gridY), x:noGridX}}});
 }
 
@@ -366,9 +370,9 @@ function drawCommercial(){
   singleBar("cRoic", commercial["ROIC"], "%", {yTitle:"ROIC %", negColor:NEG});
   singleBar("cEv", commercial["EV/EBITDA"], "x", {yTitle:"x EBITDA", negColor:NEG});
   multiBar("cCapex", [
-    {label:"Last 3Y capex", arr: commercial["Last 3Y Capex ($M)"], color:SILVER},
-    {label:"Next 3Y capex (guided)", arr: commercial["Next 3Y Capex ($M)"], color:VIOLET}
-  ], {yTitle:"Capex", money:true, breakOutliers:true});
+    {label:"Last FY capex", arr: commercial["Last FY capex ($M)"], periods: commercial["Last FY capex period"], color:SILVER},
+    {label:"Next FY capex (guided)", arr: commercial["Next FY capex ($M)"], periods: commercial["Next FY capex period"], color:VIOLET}
+  ], {yTitle:"Capex", money:true, breakOutliers:true, periodLabels:true});
 }
 
 function drawRevMargin(id){
@@ -433,8 +437,8 @@ function drawFinancial(){
 }
 
 // ---------- FTE ----------
-const fteKeys = ["Sales & BD %","IT %","Operations %","Others %","Engineering %"];
-const fteColors = [VIOLET,TURQ,SILVER,"#58C9D5",LIGHTV];
+const fteKeys = ["Sales & BD %","IT %","Operations %","Others %","Engineering %","Corporate Functions %","HR %"];
+const fteColors = [VIOLET,TURQ,SILVER,"#58C9D5",LIGHTV,"#999AB8","#B9F1F7"];
 function drawFTE(){
   singleBar("hEmp", fte["Total employees"], "", {yTitle:"Employees", breakOutliers:true, color:VIOLET, fmt:v=>Math.round(v).toLocaleString()});
   singleBar("hMw", fte["FTE/MW"], "", {yTitle:"FTE per MW", breakOutliers:true});
@@ -447,7 +451,7 @@ function drawFTE(){
     datasets: fteKeys.map((k,ki)=>({label:k.replace(" %",""), data: idx.map(i=>fte[k][i]), backgroundColor: fteColors[ki],
       datalabels:{display:c=> c.dataset.data[c.dataIndex] >= 7, color:"#091C54", font:{size:12,weight:"600"}, formatter:v=>v+"%"}}))
   }, options:{indexAxis:"y",
-    scales:{x:Object.assign({stacked:true, max:100, title:{display:true,text:"% of headcount",color:"#999AB8"}},gridY), y:{stacked:true, grid:{display:false}}},
+    scales:{x:Object.assign({stacked:true, max:Math.max(100, ...idx.map(i=>fteKeys.reduce((t,k)=>t+(fte[k][i]||0),0))), ticks:{stepSize:20, callback:v=> v>100 ? "" : v}, title:{display:true,text:"% of headcount",color:"#999AB8"}},gridY), y:{stacked:true, grid:{display:false}}},
     plugins:{legend:{position:"bottom", labels:{boxWidth:12,color:"#FFFFFF"}}}}});
 }
 
