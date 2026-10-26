@@ -210,7 +210,7 @@ h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,4vw,38px);font-we
 </div>
 
 <script>
-let companies, years, colors, LOGOS, commercial, financial, fte, groups;
+let companies, years, colors, LOGOS, commercial, financial, fte, groups, notes;
 const abbr = [];
 const logoImg = {};
 const logo = i=> `<img class="logo" src="${LOGOS[companies[i]]}" alt="${companies[i]} logo">`;
@@ -222,6 +222,8 @@ fetch("data.json", {cache:"no-cache"}).then(r=>r.json()).then(D=>{
   LOGOS = Object.fromEntries(D.companies.map(c=>[c.name, c.logo]));
   const arr = g=> Object.fromEntries(Object.entries(D.metrics[g]).map(([m,byCo])=>[m, companies.map(n=> n in byCo ? byCo[n] : "N/A")]));
   commercial = arr("Commercial"); financial = arr("Financial"); fte = arr("FTE / Headcount");
+  // a figure that covers a different period from the rest of its company, e.g. {"FCF/MW": {"IREN": "FY25"}}
+  notes = Object.fromEntries(Object.entries(D.notes||{}).map(([m,byCo])=>[m, companies.map(n=> byCo[n]||"")]));
   groups = {Commercial: commercial, Financial: financial, "FTE / Headcount": fte};
   start();
 }).catch(e=>{ document.querySelector(".wrap").insertAdjacentHTML("beforeend", `<p style="color:#ff8080">Could not load data.json (${e}).</p>`); });
@@ -302,9 +304,11 @@ function singleBar(id, arr, unit, opts={}){
     backgroundColor: vals.map(v=> v===null?GREY:(v<0?(opts.negColor||VIOLET):(opts.color||TURQ)))
   }]}, options:{plugins:{legend:{display:false},
     axisBreak:{cap},
-    tooltip:{callbacks:{label:c=> vals[c.dataIndex]===null ? "N/A" : (opts.fmt?opts.fmt(vals[c.dataIndex]):vals[c.dataIndex]+unit)}},
+    tooltip:{callbacks:{label:c=> (vals[c.dataIndex]===null ? "N/A" : (opts.fmt?opts.fmt(vals[c.dataIndex]):vals[c.dataIndex]+unit))
+      + (opts.notes && opts.notes[idx[c.dataIndex]] ? " ("+opts.notes[idx[c.dataIndex]]+")" : "")}},
     datalabels:{display:true, anchor:"end", align:c=> (c.dataset.data[c.dataIndex]<0?"bottom":"top"), color:"#FFFFFF", font:{size:12},
-      formatter:(v,c)=> { const r = vals[c.dataIndex]; return r===null ? "N/A" : (opts.fmt?opts.fmt(r):fmtShort(r)+unit); }}},
+      formatter:(v,c)=> { const r = vals[c.dataIndex], t = r===null ? "N/A" : (opts.fmt?opts.fmt(r):fmtShort(r)+unit);
+        const n = opts.notes && opts.notes[idx[c.dataIndex]]; return n ? [t, n] : t; }}},
     layout:{padding:{top:28}},
     scales:{y:Object.assign({title:{display:true,text:opts.yTitle||"",color:"#999AB8"}, ticks: opts.money?{callback:v=>v===0?"$0":fmtMoney(v)}:{}}, gridY), x:noGridX}}});
 }
@@ -406,7 +410,7 @@ function drawRevMargin(id){
 const MW_METRICS = ["Revenue/MW","EBITDA/MW","PAT/MW","FCF/MW","Capex/MW","Net debt/MW"];
 let mwMetric = "Revenue/MW";
 function drawMw(){
-  singleBar("fMw", financial[mwMetric], "", {yTitle:"$M per MW", negColor:NEG, breakOutliers:true,
+  singleBar("fMw", financial[mwMetric], "", {yTitle:"$M per MW", negColor:NEG, breakOutliers:true, notes: notes[mwMetric],
     fmt:v=>(v<0?"-":"")+"$"+(Math.round(Math.abs(v)*100)/100)+"M"});
 }
 (()=>{ const host = document.getElementById("mwPills");
